@@ -4,6 +4,8 @@ import News from './components/News';
 
 const App = () => {
 
+  const [allNews, setAllNews] = useState(true);
+
   const [newsArray, setNewsArray] = useState([]);
 
   async function fetchNews() {
@@ -12,7 +14,6 @@ const App = () => {
     }).then(res => res.json()).then(res => res.hits);
     let newNewsArray: NewsType[] = [];
     response.forEach((item: NewsResponseType, index: number) => {
-      console.log(item)
       if (item.author && item.story_title && item.story_url && item.created_at) {
         newNewsArray.push({
           id: item.objectID,
@@ -42,36 +43,50 @@ const App = () => {
           HACKER NEWS
         </span>
       </header>
-      <main>
+      <main className='app__content'>
         <section>
           <div>
-            <button className='app__button-all'>
+            <button className='app__button-all' onClick={() => { setAllNews(true) }}>
               All
             </button>
-            <button className='app__button-my-faves'>
+            <button className='app__button-my-faves' onClick={() => { setAllNews(false) }}>
               My faves
             </button>
           </div>
           <div>
             <select>
-              <option value="default" >Select your news</option>
+              {/* <option value="default" >Select your news</option> */}
               <option value="Angular">Angular</option>
-              <option value="React">React</option>
-              <option value="Vue">Vue</option>
+              {/* <option value="React">React</option>
+              <option value="Vue">Vue</option> */}
             </select>
           </div>
         </section>
         <section className='app__news'>
-          <div>
-            {
-              newsArray.map((news: NewsType) => {
-                return <News
-                  {...news}
-                  key={news.id}
-                />
-              })
-            }
-          </div>
+          {allNews ?
+            <div>
+              {
+                newsArray.map((news: NewsType) => {
+                  return <News
+                    {...news}
+                    key={news.id}
+                  />
+                })
+              }
+            </div>
+            :
+            <div>
+              {
+                Object.keys(localStorage).map((key: string) => {
+                  console.log(key)
+                  return <News
+                    {...JSON.parse(localStorage.getItem(key))}
+                    key={key}
+                  />
+                })
+              }
+            </div>
+          }
         </section>
       </main>
     </div>

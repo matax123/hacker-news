@@ -1,6 +1,5 @@
 .news__container{
-  width: 100%;
-  max-width: 550px;
+  width: 550px;
   height: 100%;
   border-radius: 6px;
   border: solid 1px #979797;
@@ -62,8 +61,8 @@
   fill: red
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1280px) {
   .news__container{
-    max-width: unset
+    width: 100%;
   }
 }

@@ -54,3 +54,8 @@ br {
 	/* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
+
+/* variables */
+:root {
+	--azure: #1797ff;
+}

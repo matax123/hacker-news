@@ -13,7 +13,8 @@ const News = (props: NewsType) => {
       console.log(1)
     }
     else {
-      localStorage.setItem(id, "true");
+      console.log(JSON.stringify(props))
+      localStorage.setItem(id, JSON.stringify(props));
       console.log(2)
     }
     setLiked(!liked);

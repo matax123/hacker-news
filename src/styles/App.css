@@ -6,7 +6,6 @@
   display: flex;
   align-items: center;
   padding-left: 150px;
-
 }
 
 .app__header>span {
@@ -19,6 +18,22 @@
   line-height: 1;
   letter-spacing: normal;
   color: #3b3b3b;
+}
+
+.app__button-all{
+  width: 98px;
+  height: 31px;
+  padding: 3px 39px 0 40px;
+  border-radius: 2px;
+  border: solid 1px #d6d6d6;
+}
+
+.app__button-my-faves{
+  width: 98px;
+  height: 31px;
+  padding: 3px 16px 0 17px;
+  border-radius: 2px;
+  border: solid 1px #d6d6d6;
 }
 
 .app__news{
@@ -37,8 +52,14 @@
   margin: 20px 0px;
 }
 
+@media screen and (max-width: 1280px) {
+  .app__header {
+    padding-left: 100px;
+  }
+}
+
 @media screen and (max-width: 1000px) {
-  .HACKER-NEWS {
+  .app__header {
     padding-left: 30px;
   }
   .app__news > div{
@@ -47,7 +68,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .HACKER-NEWS {
+  .app__header {
     padding-left: 0;
     display: flex;
     align-items: center;
