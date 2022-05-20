@@ -7,11 +7,11 @@ header {
   align-items: center;
 }
 
-.HACKER-NEWS{
+.HACKER-NEWS {
   padding-left: 150px;
 }
 
-.HACKER-NEWS > span{
+.HACKER-NEWS>span {
   height: 28px;
   font-family: Baskerville;
   font-size: 28px;
@@ -23,18 +23,48 @@ header {
   color: #3b3b3b;
 }
 
+.app__news{
+  display: flex;
+  justify-content: center;
+}
+
+.app__news > div{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  gap: 20px 50px;
+  padding: 0 20px;
+  margin: 20px 0px;
+}
+
 @media screen and (max-width: 1000px) {
-  .HACKER-NEWS{
-    padding-left: 40px;
+  .HACKER-NEWS {
+    padding-left: 30px;
+  }
+  .app__news > div{
+    gap: 20px 20px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .HACKER-NEWS{
+  .HACKER-NEWS {
     padding-left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
+  }
+
+  .app__news{
+    display: block;
+  }
+
+  .app__news > div{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
   }
 }
