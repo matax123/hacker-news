@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './styles/App.css';
 import News from './components/News';
 
 const App = () => {
 
   const [allNews, setAllNews] = useState(true);
-
   const [newsArray, setNewsArray] = useState([]);
 
-  async function fetchNews() {
-    let response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=angular&page=1', {
-      method: "GET"
-    }).then(res => res.json()).then(res => res.hits);
+  async function fetchNews(query: string) {
+    let data: NewsResponseType[] = [];
     let newNewsArray: NewsType[] = [];
-    response.forEach((item: NewsResponseType, index: number) => {
+
+    data = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=' + query + '&page=0').then(res => res.json()).then(res => res.hits)
+    data.forEach((item: NewsResponseType, index: number) => {
       if (item.author && item.story_title && item.story_url && item.created_at) {
         newNewsArray.push({
           id: item.objectID,
@@ -24,17 +23,8 @@ const App = () => {
         })
       }
     });
-    console.log(newNewsArray)
     return newNewsArray;
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      let response = await fetchNews();
-      setNewsArray(response);
-    }
-    fetchData();
-  }, []);
 
   return (
     <div>
@@ -54,11 +44,16 @@ const App = () => {
             </button>
           </div>
           <div>
-            <select>
-              {/* <option value="default" >Select your news</option> */}
+            <select onChange={async (e) => {
+              if (e.target.value !== 'default') {
+                await fetchNews(e.target.value).then(res => setNewsArray(res));
+              }
+            }
+            }>
+              <option value="default">Select your news</option>
               <option value="Angular">Angular</option>
-              {/* <option value="React">React</option>
-              <option value="Vue">Vue</option> */}
+              <option value="React">React</option>
+              <option value="Vue">Vue</option>
             </select>
           </div>
         </section>
@@ -78,7 +73,6 @@ const App = () => {
             <div>
               {
                 Object.keys(localStorage).map((key: string) => {
-                  console.log(key)
                   return <News
                     {...JSON.parse(localStorage.getItem(key))}
                     key={key}
