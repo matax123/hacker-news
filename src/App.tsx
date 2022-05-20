@@ -36,8 +36,8 @@ const App = () => {
   }, []);
 
   return (
-    <div className="App">
-      <header className="HACKER-NEWS">
+    <div>
+      <header className="app__header">
         <span>
           HACKER NEWS
         </span>
@@ -45,15 +45,15 @@ const App = () => {
       <main>
         <section>
           <div>
-            <button>
+            <button className='app__button-all'>
               All
             </button>
-            <button>
+            <button className='app__button-my-faves'>
               My faves
             </button>
           </div>
           <div>
-            <select name="" id="">
+            <select>
               <option value="default" >Select your news</option>
               <option value="Angular">Angular</option>
               <option value="React">React</option>
