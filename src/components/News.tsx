@@ -10,12 +10,9 @@ const News = (props: NewsType) => {
   const handleLike = (id: string) => {
     if (localStorage.getItem(id)) {
       localStorage.removeItem(id);
-      console.log(1)
     }
     else {
-      console.log(JSON.stringify(props))
       localStorage.setItem(id, JSON.stringify(props));
-      console.log(2)
     }
     setLiked(!liked);
   }
