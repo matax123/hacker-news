@@ -36,51 +36,59 @@ const App = () => {
       <main className='app__content'>
         <section>
           <div>
-            <button className='app__button-all' onClick={() => { setAllNews(true) }}>
+            <button className={allNews ? 'app__button-all app__selected-button' : 'app__button-all'} onClick={() => { setAllNews(true) }}>
               All
             </button>
-            <button className='app__button-my-faves' onClick={() => { setAllNews(false) }}>
+            <button className={!allNews ? 'app__button-my-faves app__selected-button' : 'app__button-my-faves'} onClick={() => { setAllNews(false) }}>
               My faves
             </button>
           </div>
-          <div>
-            <select onChange={async (e) => {
-              if (e.target.value !== 'default') {
-                await fetchNews(e.target.value).then(res => setNewsArray(res));
-              }
-            }
-            }>
-              <option value="default">Select your news</option>
-              <option value="Angular">Angular</option>
-              <option value="React">React</option>
-              <option value="Vue">Vue</option>
-            </select>
-          </div>
         </section>
-        <section className='app__news'>
-          {allNews ?
-            <div>
-              {
-                newsArray.map((news: NewsType) => {
-                  return <News
-                    {...news}
-                    key={news.id}
-                  />
-                })
-              }
+        <section className='app__news-container'>
+            <div className='app__news-grid'>
+              <div className='app__select-news-container' style={
+                allNews ? { visibility: 'visible' } : { visibility: 'hidden' }
+              }>
+                <select onChange={async (e) => {
+                  if (e.target.value !== 'default') {
+                    await fetchNews(e.target.value).then(res => setNewsArray(res));
+                  }
+                }
+                }>
+                  <option value="default">Select your news</option>
+                  <option value="Angular">Angular</option>
+                  <option value="React">React</option>
+                  <option value="Vue">Vue</option>
+                </select>
+              </div>
+
+              <div className='app__news'>
+                {allNews ?
+                  <div>
+                    {
+                      newsArray.map((news: NewsType) => {
+                        return <News
+                          {...news}
+                          key={news.id}
+                        />
+                      })
+                    }
+                  </div>
+                  :
+                  <div>
+                    {
+                      Object.keys(localStorage).map((key: string) => {
+                        return <News
+                          {...JSON.parse(localStorage.getItem(key))}
+                          key={key}
+                        />
+                      })
+                    }
+                  </div>
+                }
+              </div>
             </div>
-            :
-            <div>
-              {
-                Object.keys(localStorage).map((key: string) => {
-                  return <News
-                    {...JSON.parse(localStorage.getItem(key))}
-                    key={key}
-                  />
-                })
-              }
-            </div>
-          }
+
         </section>
       </main>
     </div>
