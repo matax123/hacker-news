@@ -10,7 +10,7 @@ const App = () => {
   const [previousFilter, setPreviousFilter] = useState(localStorage.getItem('selectedNews') ? localStorage.getItem('selectedNews') : 'default');
   const [page, setPage] = useState(0);
 
-  let observedElements:number = 0;
+  let observedElements: number = 0;
 
   const footer = useRef(null)
 
@@ -21,9 +21,26 @@ const App = () => {
     data = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=' + query + '&page=' + page).then(res => res.json()).then(res => res.hits)
     data.forEach((item: NewsResponseType, index: number) => {
       if (item.author && item.story_title && item.story_url && item.created_at) {
+        
+        let date = new Date(item.created_at)
+        var ms = (Date.now() - date.getTime())
+        let time_string: string = '';
+        if(ms/1000 < 60) {
+          time_string = Math.floor(ms/1000) + ' seconds ago'
+        }
+        else if(ms/1000/60 >= 1 && ms/1000/60 < 60) {
+          time_string = Math.floor(ms/1000/60) + ' minutes ago'
+        }
+        else if(ms/1000/60/60 >= 1 && ms/1000/60/60 < 24) {
+          time_string = Math.floor(ms/1000/60/60) + ' hours ago'
+        }
+        else{
+          time_string = Math.floor(ms/1000/60/60/24) + ' days ago'
+        }
+
         newNewsArray.push({
           id: item.objectID,
-          created_at: item.created_at,
+          created_at: time_string,
           author: item.author,
           title: item.story_title,
           url: item.story_url,
