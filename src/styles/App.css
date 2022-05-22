@@ -69,6 +69,7 @@
 .app__news-container{
   display: flex;
   justify-content: center;
+  margin-bottom: 30px;
 }
 
 .app__news-section {
@@ -112,6 +113,11 @@
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   gap: 20px 50px;
+}
+
+.app__footer{
+  display: 'none';
+  height: 70px;
 }
 
 @media screen and (max-width: 1280px) {

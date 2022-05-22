@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './styles/App.css';
 import News from './components/News';
 
@@ -7,12 +7,18 @@ const App = () => {
   const [allNews, setAllNews] = useState(true);
   const [newsArray, setNewsArray] = useState([]);
   const [filter, setFilter] = useState(localStorage.getItem('selectedNews') ? localStorage.getItem('selectedNews') : 'default');
+  const [previousFilter, setPreviousFilter] = useState(localStorage.getItem('selectedNews') ? localStorage.getItem('selectedNews') : 'default');
+  const [page, setPage] = useState(0);
 
-  async function fetchNews(query: string) {
+  let observedElements:number = 0;
+
+  const footer = useRef(null)
+
+  async function fetchNews(query: string, page: number) {
     let data: NewsResponseType[] = [];
     let newNewsArray: NewsType[] = [];
 
-    data = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=' + query + '&page=0').then(res => res.json()).then(res => res.hits)
+    data = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=' + query + '&page=' + page).then(res => res.json()).then(res => res.hits)
     data.forEach((item: NewsResponseType, index: number) => {
       if (item.author && item.story_title && item.story_url && item.created_at) {
         newNewsArray.push({
@@ -24,25 +30,58 @@ const App = () => {
         })
       }
     });
+
     return newNewsArray;
   }
 
-  useEffect(() => {
-    if (localStorage.getItem('selectedNews') && localStorage.getItem('selectedNews') !== 'default') {
-      fetchNews(localStorage.getItem('selectedNews')).then(res => {
-        setNewsArray(res);
-      })
+  async function activeObserver(toggle: boolean) {
+    if (toggle === true) {
+      footer.current.style.display = 'block';
     }
-  }, [])
+    else {
+      footer.current.style.display = 'none';
+    }
+  }
 
   useEffect(() => {
-    if (filter !== 'default') {
-      console.log(filter)
-      fetchNews(filter).then(res => {
+    if (filter !== previousFilter) {
+      fetchNews(filter, 0).then(res => {
         setNewsArray(res);
+        activeObserver(true);
       })
+      setPage(1);
+      setPreviousFilter(filter);
     }
-  }, [filter])
+    else {
+      const observer = new IntersectionObserver(async (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting) {
+          let news = fetchNews(filter, page);
+          news.then(res => {
+            //set newsArray to [previous newsArray + new news]
+            setNewsArray(prev => [...prev, ...res]);
+            setPage(prev => prev + 1)
+          })
+        }
+      }, { threshold: 0.5 })
+
+      activeObserver(false)
+      if (allNews === true && filter !== 'default') {
+        activeObserver(true)
+        if (observedElements === 0) {
+          observer.observe(footer.current)
+          observedElements++;
+        }
+        else {
+          observer.disconnect();
+        }
+      }
+      //eslint-disable-next-line
+      return () => observer.disconnect();
+    }
+    return () => { };
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, footer, page, allNews]);
 
   return (
     <div>
@@ -71,7 +110,7 @@ const App = () => {
                   setFilter(e.target.value);
                 }
               }
-              defaultValue={filter}
+                defaultValue={filter}
               >
                 <option value="default" disabled hidden>Select your news</option>
                 <option value="Angular">Angular</option>
@@ -79,15 +118,14 @@ const App = () => {
                 <option value="Vue">Vue</option>
               </select>
             </div>
-
             <div className='app__news'>
               {allNews ?
                 <div>
                   {
-                    newsArray.map((news: NewsType) => {
+                    newsArray.map((news: NewsType, index: number) => {
                       return <News
                         {...news}
-                        key={news.id}
+                        key={index}
                       />
                     })
                   }
@@ -95,19 +133,22 @@ const App = () => {
                 :
                 <div>
                   {
-                    Object.keys(localStorage).map((key: string) => {
-                      return <News
-                        {...JSON.parse(localStorage.getItem(key))}
-                        key={key}
-                      />
+                    Object.keys(localStorage).map((key: string, index: number) => {
+                      if (key !== 'selectedNews') {
+                        return <News
+                          {...JSON.parse(localStorage.getItem(key))}
+                          key={index}
+                        />
+                      }
+                      return null;
                     })
                   }
                 </div>
               }
             </div>
           </div>
-
         </section>
+        <footer className='app__footer' ref={footer} />
       </main>
     </div>
   );
