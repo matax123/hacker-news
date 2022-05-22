@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './styles/App.css';
-import News from './components/News';
+import '../../styles/App.css';
+import News from '../News/News';
 
 const App = () => {
 
