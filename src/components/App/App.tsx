@@ -9,10 +9,12 @@ const App = () => {
   const [filter, setFilter] = useState(localStorage.getItem('selectedNews') ? localStorage.getItem('selectedNews') : 'default');
   const [previousFilter, setPreviousFilter] = useState(localStorage.getItem('selectedNews') ? localStorage.getItem('selectedNews') : 'default');
   const [page, setPage] = useState(0);
+  const [activeFiltersContainer, setActiveFiltersContainer] = useState(false);
 
   let observedElements: number = 0;
 
   const footer = useRef(null)
+  const newsFilters = useRef(null)
 
   async function fetchNews(query: string, page: number) {
     let data: NewsResponseType[] = [];
@@ -21,21 +23,21 @@ const App = () => {
     data = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=' + query + '&page=' + page).then(res => res.json()).then(res => res.hits)
     data.forEach((item: NewsResponseType, index: number) => {
       if (item.author && item.story_title && item.story_url && item.created_at) {
-        
+
         let date = new Date(item.created_at)
         var ms = (Date.now() - date.getTime())
         let time_string: string = '';
-        if(ms/1000 < 60) {
-          time_string = Math.floor(ms/1000) + ' seconds ago'
+        if (ms / 1000 < 60) {
+          time_string = Math.floor(ms / 1000) + ' seconds ago'
         }
-        else if(ms/1000/60 >= 1 && ms/1000/60 < 60) {
-          time_string = Math.floor(ms/1000/60) + ' minutes ago'
+        else if (ms / 1000 / 60 >= 1 && ms / 1000 / 60 < 60) {
+          time_string = Math.floor(ms / 1000 / 60) + ' minutes ago'
         }
-        else if(ms/1000/60/60 >= 1 && ms/1000/60/60 < 24) {
-          time_string = Math.floor(ms/1000/60/60) + ' hours ago'
+        else if (ms / 1000 / 60 / 60 >= 1 && ms / 1000 / 60 / 60 < 24) {
+          time_string = Math.floor(ms / 1000 / 60 / 60) + ' hours ago'
         }
-        else{
-          time_string = Math.floor(ms/1000/60/60/24) + ' days ago'
+        else {
+          time_string = Math.floor(ms / 1000 / 60 / 60 / 24) + ' days ago'
         }
 
         newNewsArray.push({
@@ -61,6 +63,13 @@ const App = () => {
   }
 
   useEffect(() => {
+    if(allNews === false){
+      setActiveFiltersContainer(false)
+      newsFilters.current.style.display = 'none';
+    }
+    else{
+      newsFilters.current.style.display = 'block';
+    }
     if (filter !== previousFilter) {
       fetchNews(filter, 0).then(res => {
         setNewsArray(res);
@@ -121,19 +130,67 @@ const App = () => {
         <section className='app__news-container'>
           <div className='app__news-grid'>
             <div className='app__select-news-container' style={allNews ? { visibility: 'visible' } : { visibility: 'hidden' }}>
-              <select onChange={
-                async (e) => {
-                  localStorage.setItem('selectedNews', e.target.value);
-                  setFilter(e.target.value);
+              <button style={{zIndex: '2'}} onClick={() => setActiveFiltersContainer(!activeFiltersContainer)}>
+                {
+                  filter === 'Angular' ? <div>
+                    <div>
+                      <img src="angular.png" alt="" />
+                    </div>
+                    <span>Angular</span>
+                  </div>
+                    : filter === 'React' ? <div>
+                      <div>
+                        <img src="react.png" alt="" />
+                      </div>
+                      <span>React</span>
+                    </div>
+                      : filter === 'Vue' ? <div>
+                        <div>
+                          <img src="vue.png" alt="" />
+                        </div>
+                        <span>Vue</span>
+                      </div>
+                        : <div>Select your news</div>
                 }
-              }
-                defaultValue={filter}
-              >
-                <option value="default" disabled hidden>Select your news</option>
-                <option value="Angular">Angular</option>
-                <option value="React">React</option>
-                <option value="Vue">Vue</option>
-              </select>
+              </button>
+              <div ref={newsFilters} className='app__filters' style={activeFiltersContainer ? { visibility: 'visible', opacity: '1', top: '309px' } : { visibility: 'hidden', opacity: '0', top: '280px'}}>
+                <div onClick={
+                  (e) => {
+                    localStorage.setItem('selectedNews', 'Angular');
+                    setFilter('Angular');
+                    setActiveFiltersContainer(false);
+                  }
+                }>
+                  <div>
+                    <img src="angular.png" alt="" />
+                  </div>
+                  <span>Angular</span>
+                </div>
+                <div onClick={
+                  (e) => {
+                    localStorage.setItem('selectedNews', 'React');
+                    setFilter('React');
+                    setActiveFiltersContainer(false);
+                  }
+                }>
+                  <div>
+                    <img src="react.png" alt="" />
+                  </div>
+                  <span>React</span>
+                </div>
+                <div onClick={
+                  (e) => {
+                    localStorage.setItem('selectedNews', 'Vue');
+                    setFilter('Vue');
+                    setActiveFiltersContainer(false);
+                  }
+                }>
+                  <div>
+                    <img src="vue.png" alt="" />
+                  </div>
+                  <span>Vue</span>
+                </div>
+              </div>
             </div>
             <div className='app__news'>
               {allNews ?
